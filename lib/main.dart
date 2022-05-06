@@ -10,12 +10,12 @@ class VncApp extends StatelessWidget {
     return MaterialApp(
       title: '# vc na corrida',
       theme: ThemeData(
-        brightness: Brightness.dark,
+        brightness: Brightness.light,
         appBarTheme: const AppBarTheme(
           color: Colors.yellow,
         ),
       ),
-      home: const Home(),
+      home: const ControlScreen(),
     );
   }
 }
@@ -53,11 +53,64 @@ class LogoTitle extends StatelessWidget {
   }
 }
 
-class Cadastro {
+class ControlScreen extends StatefulWidget {
+  const ControlScreen({Key? key}) : super(key: key);
+
+  @override
+  _ControlScreenState createState() => _ControlScreenState();
+}
+
+class _ControlScreenState extends State<ControlScreen> {
+  int _indiceAtual = 0;
+
+  final List<Widget> _telas = [
+    HomeScreen(),
+    TreinoScreen(),
+    PerfilScreen()
+  ];
+
+  void onTabTapped(int index) {
+    setState(() {
+      _indiceAtual = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const LogoTitle(),
+      ),
+      body: _telas[_indiceAtual],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.black,
+        currentIndex: _indiceAtual,
+        items: const <BottomNavigationBarItem> [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Painel',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.run_circle),
+            label: 'Treino',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Perfil',
+          ),
+        ],
+        onTap: onTabTapped,
+      ),
+    );
+  }
+}
+
+class CadastroInstance {
   late final String nome;
   late final int idade;
 
-  Cadastro(this.nome, this.idade);
+  CadastroInstance(this.nome, this.idade);
 
   @override
   String toString() {
@@ -75,7 +128,7 @@ class FormCadastro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const LogoTitle(),
+        title: const Text('Cadastro', style: TextStyle(color: Colors.black),),
       ),
       body: Column(
         children: [
@@ -101,7 +154,7 @@ class FormCadastro extends StatelessWidget {
     final int? idade = int.tryParse(_controllerInputIdade.text);
 
     if (nome != null && idade != null) {
-      final cadastro = Cadastro(nome, idade);
+      final cadastro = CadastroInstance(nome, idade);
       Navigator.pop(context, cadastro);
     }
   }
@@ -141,34 +194,316 @@ class Campo extends StatelessWidget {
   }
 }
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
-  @override
-  State<StatefulWidget> createState() {
-    return ListaCadastrosState();
-  }
-}
-
-class ListaCadastrosState extends State<Home> {
-  final List<Cadastro> _cadastros = [];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const LogoTitle(),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          const ListTile(
+            title: Text('Seja bem vindo, William!'),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Card(
+                  child: Column(
+                    children: const [
+                      ListTile(
+                        title: Text('Treinos concluídos', textAlign: TextAlign.center),
+                      ),
+                      ListTile(
+                        title: Text('8', textAlign: TextAlign.center),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Card(
+                  child: Column(
+                    children: const [
+                      ListTile(
+                        title: Text('KM', textAlign: TextAlign.center),
+                      ),
+                      ListTile(
+                        title: Text('261', textAlign: TextAlign.center),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Card(
+                  child: Column(
+                    children: const [
+                      ListTile(
+                        title: Text('Passos', textAlign: TextAlign.center),
+                      ),
+                      ListTile(
+                        title: Text('60.843', textAlign: TextAlign.center),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
       ),
-      body: ListView.builder(
-          itemCount: _cadastros.length,
-          itemBuilder: (context, indice) {
-            return ListTile(
-              title: Text(_cadastros[indice].nome),
-            );
-          }),
+    );
+  }
+}
+
+class TreinoScreen extends StatelessWidget {
+  const TreinoScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    void onTabTapped() {
+      showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return SizedBox(
+            height: 400,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Scaffold(
+                body: Column(
+                  children: [
+                    const Text('Treino',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22
+                      ),
+                    ),
+                    const Card(
+                      child: ListTile(
+                        leading: Icon(Icons.timelapse),
+                        title: Text('${20} min'),
+                      )
+                    ),
+                    Card(
+                        child: Column(
+                          children: [
+                            const ListTile(
+                              title: Text('Exercícios praticados',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 190,
+                              child: SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(1.0),
+                                  child: Column(
+                                    children: const [
+                                      Card(
+                                        child: ListTile(
+                                          title: Text('Aquecimento'),
+                                        ),
+                                      ),
+                                      Card(
+                                        child: ListTile(
+                                          title: Text('Caminhada'),
+                                        ),
+                                      ),
+                                      Card(
+                                        child: ListTile(
+                                          title: Text('Corrida'),
+                                        ),
+                                      ),
+                                      Card(
+                                        child: ListTile(
+                                          title: Text('Caminhada'),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                    )
+                  ],
+                ),
+
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Icon(Icons.close, color: Colors.black),
+                  backgroundColor: Colors.yellow,
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Card(
+            child: Column(
+              children: [
+                const ListTile(
+                  minLeadingWidth: 10.0,
+                  leading: Icon(Icons.history),
+                  title: Text('Histórico de treinos', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+                ),
+                SizedBox(
+                  height: 200,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Card(
+                            child: ListTile(
+                              minLeadingWidth: 10.0,
+                              leading: Icon(Icons.directions_run),
+                              title: Text('Treino 1'),
+                              trailing: Icon(Icons.more_horiz),
+                              onTap: onTabTapped,
+                            ),
+                          ),
+                          Card(
+                            child: ListTile(
+                              minLeadingWidth: 10.0,
+                              leading: Icon(Icons.directions_run),
+                              title: Text('Treino 2'),
+                              trailing: Icon(Icons.more_horiz),
+                              onTap: onTabTapped,
+                            ),
+                          ),
+                          Card(
+                            child: ListTile(
+                              minLeadingWidth: 10.0,
+                              leading: Icon(Icons.directions_run),
+                              title: Text('Treino 3'),
+                              trailing: Icon(Icons.more_horiz),
+                              onTap: onTabTapped,
+                            ),
+                          ),
+                          Card(
+                            child: ListTile(
+                              minLeadingWidth: 10.0,
+                              leading: Icon(Icons.directions_run),
+                              title: Text('Treino 4'),
+                              trailing: Icon(Icons.more_horiz),
+                              onTap: onTabTapped,
+                            ),
+                          ),
+                          Card(
+                            child: ListTile(
+                              minLeadingWidth: 10.0,
+                              leading: Icon(Icons.directions_run),
+                              title: Text('Treino 5'),
+                              trailing: Icon(Icons.more_horiz),
+                              onTap: onTabTapped,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class PerfilScreen extends StatefulWidget {
+
+  const PerfilScreen({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return PerfilState();
+  }
+}
+
+class PerfilState extends State<PerfilScreen> {
+  final List<CadastroInstance> _cadastros = [];
+
+  @override
+  Widget build(BuildContext context) {
+    double _currentSliderValue = 20;
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              children: const [
+                Expanded(
+                  flex: 3,
+                  child: Card(
+                    child: ListTile(
+                      leading: Icon(Icons.person),
+                      minLeadingWidth: 10.0,
+                      title: Text('William Alfred Gazal Júnior'),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Card(
+                    child: ListTile(
+                      minLeadingWidth: 10.0,
+                      leading: Icon(Icons.male),
+                      title: Text('M'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Card(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListTile(
+                      minLeadingWidth: 10.0,
+                      title: Text('IMC:  ${_currentSliderValue.round().toString()}'),
+                    ),
+                  ),
+                Expanded(
+                  child: Slider(
+                    max: 100,
+                    divisions: 5,
+                    thumbColor: Colors.blue,
+                    activeColor: Colors.red,
+                    inactiveColor: Colors.red[100],
+                    value: _currentSliderValue,
+                    label: _currentSliderValue.round().toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        _currentSliderValue = value;
+                      });
+                    },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          final Future<Cadastro?> future =
+          final Future<CadastroInstance?> future =
               Navigator.push(context, MaterialPageRoute(builder: (context) {
             return FormCadastro();
           }));
@@ -179,8 +514,8 @@ class ListaCadastrosState extends State<Home> {
             }
           });
         },
-        icon: const Icon(Icons.add),
-        label: const Text('Cadastro'),
+        icon: const Icon(Icons.edit, color: Colors.black),
+        label: const Text('Cadastro', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.yellow,
       ),
     );
