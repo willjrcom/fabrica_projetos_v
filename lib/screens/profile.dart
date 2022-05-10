@@ -186,19 +186,19 @@ class ProfileState extends State<ProfileScreen> {
       ),
       floatingActionButton: userExists
           ? FloatingActionButton.extended(
-        onPressed: () {
-          final Future<ProfileInstance?> future =
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const RegisterScreen();
-          }));
-          future.then((newProfile) {
-            if (newProfile != null) {
-              loadProfile(newProfile);
-            }
-          });
-        },
-        icon: const Icon(Icons.edit, color: Colors.black),
-        label: const Text('Editar perfil', style: TextStyle(color: Colors.black)),
+            onPressed: () {
+              final Future<ProfileInstance?> future =
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const RegisterScreen();
+              }));
+              future.then((newProfile) {
+                if (newProfile != null) {
+                  loadProfile(newProfile);
+                }
+              });
+            },
+            icon: const Icon(Icons.edit, color: Colors.black),
+            label: const Text('Editar perfil', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.yellow,
       ) : null,
     );

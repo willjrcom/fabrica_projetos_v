@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'components/app_bar.dart';
 import 'screens/home.dart';
-import 'screens/training.dart';
+import 'screens/history_training.dart';
 import 'screens/profile.dart';
 
 void main() => runApp(const VncApp());
@@ -37,7 +37,7 @@ class _ControlScreenState extends State<ControlScreen> {
 
   final List<Widget> _telas = [
     const HomeScreen(),
-    const TrainingScreen(),
+    const HistoryTrainingScreen(),
     const ProfileScreen()
   ];
 
