@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_app/components/input_field.dart';
 
 import '../Model/profile_instance.dart';
-import '../database/app_database.dart';
+import '../database/profile_database.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -32,8 +32,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    findById().then((profile) => loadInputs(profile));
-
+    if (!userExists) {
+      findProfileById().then((profile) => loadInputs(profile));
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cadastro', style: TextStyle(color: Colors.black),),
@@ -88,9 +89,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (name != null && age != null && weight != null && height != null) {
       final profile = ProfileInstance(id, name, age, weight, height);
       if (userExists) {
-        update(profile);
+        updateProfile(profile);
       } else {
-        save(profile);
+        saveProfile(profile);
       }
       Navigator.pop(context, profile);
     }

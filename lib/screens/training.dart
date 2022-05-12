@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/Model/profile_instance.dart';
 
-import '../database/app_database.dart';
+import '../Model/training_instance.dart';
+import '../database/profile_database.dart';
+import '../database/training_database.dart';
 
 enum selectOptions { lafayette, jefferson }
 
@@ -14,19 +16,19 @@ class TrainingScreen extends StatefulWidget {
 
 class _TrainingScreenState extends State<TrainingScreen> {
   late ProfileInstance profile;
-
-  bool userExists = false;
   selectOptions? _character = selectOptions.lafayette;
 
   void loadProfile(newProfile) {
-    userExists = true;
-    profile = newProfile;
+    if (newProfile != null) {
+      profile = newProfile;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    //findProfileById().then((profile) => setState(() => loadProfile(profile)));
+    //findAllTraining().then((list) => print(list));
 
-    findById().then((profile) => setState(() => loadProfile(profile)));
     return Scaffold(
       appBar: AppBar(
         title: const Text('Novo treino', style: TextStyle(color: Colors.black),),
@@ -67,12 +69,14 @@ class _TrainingScreenState extends State<TrainingScreen> {
             const ListTile(
               title: Text('2. Escolha uma opção abaixo!'),
             ),
-            ElevatedButton(
-                onPressed: () => Navigator.pop(context, profile),
-                child: const Text('Iniciar treino')
-            ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => finishTraining().then((training) => Navigator.pop(context, training)),
+        icon: const Icon(Icons.check, color: Colors.black),
+        label: const Text('Finalizar treino', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.yellow,
       ),
     );
   }

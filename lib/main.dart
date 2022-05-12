@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'Model/profile_instance.dart';
 import 'components/app_bar.dart';
 import 'screens/home.dart';
 import 'screens/history_training.dart';
 import 'screens/profile.dart';
+import 'screens/register.dart';
+import 'screens/training.dart';
 
 void main() => runApp(const VncApp());
 
@@ -33,9 +36,9 @@ class ControlScreen extends StatefulWidget {
 }
 
 class _ControlScreenState extends State<ControlScreen> {
-  int _indiceAtual = 0;
+  int _indexScreen = 0;
 
-  final List<Widget> _telas = [
+  final List<Widget> _screens = [
     const HomeScreen(),
     const HistoryTrainingScreen(),
     const ProfileScreen()
@@ -43,7 +46,7 @@ class _ControlScreenState extends State<ControlScreen> {
 
   void onTabTapped(int index) {
     setState(() {
-      _indiceAtual = index;
+      _indexScreen = index;
     });
   }
 
@@ -53,11 +56,11 @@ class _ControlScreenState extends State<ControlScreen> {
       appBar: AppBar(
         title: const LogoTitle(),
       ),
-      body: _telas[_indiceAtual],
+      body: _screens[_indexScreen],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         selectedItemColor: Colors.black,
-        currentIndex: _indiceAtual,
+        currentIndex: _indexScreen,
         items: const <BottomNavigationBarItem> [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -76,4 +79,15 @@ class _ControlScreenState extends State<ControlScreen> {
       ),
     );
   }
+}
+
+Future loadScreen(BuildContext context, String screen) {
+  return Navigator.push(context, MaterialPageRoute(builder: (context) {
+    if (screen == 'training') {
+      return const TrainingScreen();
+    } else if (screen == 'register') {
+      return const RegisterScreen();
+    }
+    return const HomeScreen();
+  }));
 }

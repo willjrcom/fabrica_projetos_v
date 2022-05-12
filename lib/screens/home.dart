@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/Model/profile_instance.dart';
 
-import '../database/app_database.dart';
-import 'register.dart';
-import 'training.dart';
+import '../Model/training_instance.dart';
+import '../database/profile_database.dart';
+import '../database/training_database.dart';
+import '../main.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,40 +15,83 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late ProfileInstance profile;
+  late TrainingInstance training;
 
+  late String dataTimeStart;
+  late String dataTimeTotal = '0';
   bool userExists = false;
+  bool hasOpenTraining = false;
+  int totalTrainingFinish = 0;
 
   void loadProfile(newProfile) {
-    userExists = true;
-    profile = newProfile;
+    if (newProfile != null) {
+      userExists = true;
+      profile = newProfile;
+      countTraining().then((value) => totalTrainingFinish = value);
+    }
+  }
+
+  void loadOpenTraining(newTraining) {
+    if (newTraining != null) {
+      training = newTraining;
+
+      DateTime timeStart = DateTime.parse(training.dataTimeStart);
+      dataTimeTotal = DateTime.now().difference(timeStart).inMinutes.toString();
+      String hour = timeStart.hour < 10 ? '0' + timeStart.hour.toString() : timeStart.hour.toString();
+      String minute = timeStart.minute < 10 ? '0' + timeStart.minute.toString() : timeStart.minute.toString();
+      dataTimeStart = hour + ':' + minute;
+
+      if (newTraining.isOpen == 1) {
+        setState(() => hasOpenTraining = true);
+      }
+    }
+  }
+
+  onPressFloatingActionButton() {
+    if (userExists) {
+      TrainingInstance training = TrainingInstance(0, 'treino 1', '',  '', '', 1);
+      createTraining(training).then((value) => loadScreen(context, 'training').then((trainingFinish) => {
+        if (trainingFinish?.isOpen == 0) {
+          countTraining().then((value) => setState(() => totalTrainingFinish = value))
+        } else {
+          findOpenTraining().then((value) => loadOpenTraining(value))
+        }
+      })
+      );
+    } else {
+      loadScreen(context, 'register').then((newProfile) => newProfile != null ? loadProfile(newProfile) : null);
+    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    findById().then((profile) => {
-      setState(() => {
-        loadProfile(profile)
-      }),
-    });
+    if (!userExists) {
+      findProfileById().then((profile) => setState(() => loadProfile(profile)));
+    } else {
+      findOpenTraining().then((value) => loadOpenTraining(value));
+    }
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            const ListTile(
-              title: Text('Seja bem vindo, William!'),
+            ListTile(
+              title: userExists
+                  ? Text('Seja bem vindo, ${profile.name.split(' ')[0]}')
+                  : const Text('Seja bem vindo!'),
             ),
             Row(
               children: [
                 Expanded(
                   child: Card(
                     child: Column(
-                      children: const [
-                        ListTile(
+                      children: [
+                        const ListTile(
                           title: Text('Treinos concluídos', textAlign: TextAlign.center),
                         ),
                         ListTile(
-                          title: Text('8', textAlign: TextAlign.center),
+                          title: Text(totalTrainingFinish.toString(), textAlign: TextAlign.center),
                         ),
                       ],
                     ),
@@ -83,25 +127,61 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
+            if (hasOpenTraining)
+              Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8, top: 16),
+                    child:
+                    ListTile(
+                      title: Text('Treino em andamento', style: TextStyle(fontSize: 20)),
+                    ),
+                  ),
+                  Material(
+                    child: InkWell(
+                      onTap: () => loadScreen(context, 'training'),
+                      child: Card(
+                        child: Column(
+                          children: [
+                            const ListTile(
+                              minLeadingWidth: 10.0,
+                              title: Text('Acessar treino', style: TextStyle(fontSize: 20),),
+                              leading: Icon(Icons.directions_run),
+                              trailing: Icon(Icons.exit_to_app, size: 30,),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    minLeadingWidth: 10.0,
+                                    title: Text('Início: ' + dataTimeStart),
+                                    leading: const Icon(Icons.play_arrow),
+                                  ),
+                                  ListTile(
+                                    minLeadingWidth: 10.0,
+                                    title: Text('Total: ' + dataTimeTotal + ' min'),
+                                    leading: const Icon(Icons.timer),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          final Future<ProfileInstance?> future =
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return userExists ? const TrainingScreen() : const RegisterScreen();
-          }));
-          future.then((newProfile) {
-            if (newProfile != null) {
-              loadProfile(newProfile);
-            }
-          });
-        },
+      floatingActionButton: !hasOpenTraining ? FloatingActionButton.extended(
+        onPressed: () => onPressFloatingActionButton(),
         icon: Icon(userExists ? Icons.play_arrow : Icons.add, color: Colors.black),
-        label: Text(userExists ? 'Iniciar treino' : 'Cadastrar perfil', style: const TextStyle(color: Colors.black)),
+        label: Text(userExists ? 'Gerar treino' : 'Cadastrar perfil', style: const TextStyle(color: Colors.black)),
         backgroundColor: Colors.yellow,
-      ),
+      ) : null,
     );
   }
 }

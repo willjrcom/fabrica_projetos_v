@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../Model/profile_instance.dart';
-import '../database/app_database.dart';
+import '../database/profile_database.dart';
 import 'register.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,16 +23,18 @@ class ProfileState extends State<ProfileScreen> {
   double imc = 0;
 
   void loadProfile(profile) {
-    userExists = true;
-    name = profile.name;
-    age = profile.age;
-    weight = profile.weight;
-    height = profile.height;
+    if (profile != null) {
+      userExists = true;
+      name = profile.name;
+      age = profile.age;
+      weight = profile.weight;
+      height = profile.height;
 
-    imc = profile.weight / ((profile.height / 100) * (profile.height / 100));
+      imc = profile.weight / ((profile.height / 100) * (profile.height / 100));
 
-    if (imc > 50) {
-      imc = 50;
+      if (imc > 50) {
+        imc = 50;
+      }
     }
   }
 
@@ -60,11 +62,9 @@ class ProfileState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    findById().then((profile) => {
-      setState(() => {
-        loadProfile(profile)
-      }),
-    });
+    if (!userExists) {
+      findProfileById().then((profile) => setState(() => loadProfile(profile)));
+    }
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
