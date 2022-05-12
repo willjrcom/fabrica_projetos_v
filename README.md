@@ -1,6 +1,7 @@
-# my_app
+# #vcNaCorrida
 
-A new Flutter project.
+Projeto mobile para ensinar pessoas a praticar corrida e seus beneficios.
+Desenvolvido para a fabrica de projetos V na FACENS.
 
 ## Getting Started
 
