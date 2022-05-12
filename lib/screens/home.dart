@@ -43,16 +43,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (newTraining.isOpen == 1) {
         setState(() => hasOpenTraining = true);
+      } else {
+        setState(() => hasOpenTraining = false);
       }
     }
   }
 
+  void onFinishTraining() {
+    countTraining().then((value) => setState(() => totalTrainingFinish = value));
+    setState(() => hasOpenTraining = false);
+  }
+
+  onTapTraining() {
+    loadScreen(context, 'training').then((trainingFinish) => {
+      if (trainingFinish?.isOpen == 0) {
+        onFinishTraining()
+      } else {
+        findOpenTraining().then((value) => loadOpenTraining(value))
+      }
+    });
+  }
+
   onPressFloatingActionButton() {
     if (userExists) {
-      TrainingInstance training = TrainingInstance(0, 'treino 1', '',  '', '', 1);
+      training = TrainingInstance(0, 'treino 1', '', '', '', 1);
       createTraining(training).then((value) => loadScreen(context, 'training').then((trainingFinish) => {
         if (trainingFinish?.isOpen == 0) {
-          countTraining().then((value) => setState(() => totalTrainingFinish = value))
+          onFinishTraining()
         } else {
           findOpenTraining().then((value) => loadOpenTraining(value))
         }
@@ -139,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Material(
                     child: InkWell(
-                      onTap: () => loadScreen(context, 'training'),
+                      onTap: () => onTapTraining(),
                       child: Card(
                         child: Column(
                           children: [

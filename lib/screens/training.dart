@@ -66,9 +66,6 @@ class _TrainingScreenState extends State<TrainingScreen> {
                 ),
               ],
             ),
-            const ListTile(
-              title: Text('2. Escolha uma opção abaixo!'),
-            ),
           ],
         ),
       ),

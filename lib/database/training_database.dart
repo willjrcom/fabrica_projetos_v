@@ -83,22 +83,27 @@ Future<TrainingInstance> createTraining(TrainingInstance training) async {
 Future<TrainingInstance?> finishTraining() async {
   Database database = await createDatabase();
   var maps = await database.query('training');
-  TrainingInstance training;
+  late TrainingInstance training;
 
   for (Map<String, dynamic> map in maps) {
     if (map['isOpen'] == 1) {
       training = trainingFromMap(map);
-
-      var dataTimeStart = DateTime.parse(training.dataTimeStart);
-      final dataTimeFinish = DateTime.now().toLocal();
-      training.dataTimeFinish = dataTimeFinish.toString();
-      training.dataTimeTotal = dataTimeFinish.difference(dataTimeStart).toString();
-      training.isOpen = 0;
-      await database.update('training', training.toMap(), where: 'id = ?', whereArgs: [training.id]);
-      return training;
     }
   }
-  return null;
+  if (training == null) {
+    return null;
+  }
+
+  var dataTimeStart = DateTime.parse(training.dataTimeStart);
+  final dataTimeFinish = DateTime.now().toLocal();
+
+  training.dataTimeFinish = dataTimeFinish.toString();
+  training.dataTimeTotal = dataTimeFinish.difference(dataTimeStart).toString();
+  training.isOpen = 0;
+  print('up' + training.id.toString());
+  await database.update('training', training.toMap(), where: 'id = ?', whereArgs: [training.id]);
+  print('date');
+  return training;
 }
 
 Future<int> updateTraining(TrainingInstance training) async {
