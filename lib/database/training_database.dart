@@ -34,13 +34,15 @@ Future<int> countTraining() async {
   return count;
 }
 
-Future<List<TrainingInstance>> findAllTraining() async {
+Future<List<TrainingInstance>> findAllTrainingComplete() async {
   Database database = await createDatabase();
   var maps = await database.query('training');
 
   List<TrainingInstance> trainings = [];
-  for (var i = 0; i < maps.length; i++) {
-    trainings.add(trainingFromMap(maps[i]));
+  for (Map<String, dynamic> map in maps) {
+    if (map['isOpen'] == 0) {
+      trainings.add(trainingFromMap(map));
+    }
   }
   return trainings;
 }
@@ -100,9 +102,7 @@ Future<TrainingInstance?> finishTraining() async {
   training.dataTimeFinish = dataTimeFinish.toString();
   training.dataTimeTotal = dataTimeFinish.difference(dataTimeStart).toString();
   training.isOpen = 0;
-  print('up' + training.id.toString());
   await database.update('training', training.toMap(), where: 'id = ?', whereArgs: [training.id]);
-  print('date');
   return training;
 }
 

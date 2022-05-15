@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/Model/training_instance.dart';
 
-class HistoryTrainingScreen extends StatelessWidget {
-  const HistoryTrainingScreen({Key? key}) : super(key: key);
+import '../database/training_database.dart';
+
+class HistoryTrainingScreen extends StatefulWidget {
+  HistoryTrainingScreen({Key? key}) : super(key: key);
+  final List<TrainingInstance> _trainings = [];
 
   @override
+  State<HistoryTrainingScreen> createState() => _HistoryTrainingScreenState();
+}
+
+class _HistoryTrainingScreenState extends State<HistoryTrainingScreen> {
+  @override
   Widget build(BuildContext context) {
+
+    void loadAllTraining(trainings) {
+      print(trainings.length);
+      if (widget._trainings.length != trainings.length) {
+        for (TrainingInstance training in trainings) {
+            widget._trainings.add(training);
+          }
+      }
+    }
+    findAllTrainingComplete().then((value) => loadAllTraining(value));
+
     void onTabTapped() {
       showModalBottomSheet<void>(
         context: context,
@@ -101,60 +121,19 @@ class HistoryTrainingScreen extends StatelessWidget {
                 ),
                 SizedBox(
                   height: 200,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Card(
+                  child: ListView.builder(
+                      itemCount: widget._trainings.length,
+                      itemBuilder: (context, indice) {
+                        return Card(
                             child: ListTile(
                               minLeadingWidth: 10.0,
-                              leading: Icon(Icons.directions_run),
-                              title: Text('Treino 1'),
-                              trailing: Icon(Icons.more_horiz),
+                              leading: const Icon(Icons.directions_run),
+                              title: Text(widget._trainings[indice].name),
+                              trailing: const Icon(Icons.more_horiz),
                               onTap: onTabTapped,
                             ),
-                          ),
-                          Card(
-                            child: ListTile(
-                              minLeadingWidth: 10.0,
-                              leading: Icon(Icons.directions_run),
-                              title: Text('Treino 2'),
-                              trailing: Icon(Icons.more_horiz),
-                              onTap: onTabTapped,
-                            ),
-                          ),
-                          Card(
-                            child: ListTile(
-                              minLeadingWidth: 10.0,
-                              leading: Icon(Icons.directions_run),
-                              title: Text('Treino 3'),
-                              trailing: Icon(Icons.more_horiz),
-                              onTap: onTabTapped,
-                            ),
-                          ),
-                          Card(
-                            child: ListTile(
-                              minLeadingWidth: 10.0,
-                              leading: Icon(Icons.directions_run),
-                              title: Text('Treino 4'),
-                              trailing: Icon(Icons.more_horiz),
-                              onTap: onTabTapped,
-                            ),
-                          ),
-                          Card(
-                            child: ListTile(
-                              minLeadingWidth: 10.0,
-                              leading: Icon(Icons.directions_run),
-                              title: Text('Treino 5'),
-                              trailing: Icon(Icons.more_horiz),
-                              onTap: onTabTapped,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                          );
+                      }),
                 )
               ],
             ),
@@ -163,4 +142,20 @@ class HistoryTrainingScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+funcao() {
+  return Column(
+      children: const [
+        Card(
+          child: ListTile(
+            minLeadingWidth: 10.0,
+            leading: Icon(Icons.directions_run),
+            title: Text('Treino 1'),
+            trailing: Icon(Icons.more_horiz),
+            //onTap: onTabTapped,
+          ),
+        ),
+      ],
+    );
 }

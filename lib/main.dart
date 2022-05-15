@@ -40,7 +40,7 @@ class _ControlScreenState extends State<ControlScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const HistoryTrainingScreen(),
+    HistoryTrainingScreen(),
     const ProfileScreen()
   ];
 

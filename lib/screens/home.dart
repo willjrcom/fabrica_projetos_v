@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_app/Model/profile_instance.dart';
 
 import '../Model/training_instance.dart';
+import '../components/carousel.dart';
 import '../database/profile_database.dart';
 import '../database/training_database.dart';
 import '../main.dart';
@@ -91,106 +92,113 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            ListTile(
-              title: userExists
-                  ? Text('Seja bem vindo, ${profile.name.split(' ')[0]}')
-                  : const Text('Seja bem vindo!'),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Card(
-                    child: Column(
-                      children: [
-                        const ListTile(
-                          title: Text('Treinos concluídos', textAlign: TextAlign.center),
-                        ),
-                        ListTile(
-                          title: Text(totalTrainingFinish.toString(), textAlign: TextAlign.center),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Card(
-                    child: Column(
-                      children: const [
-                        ListTile(
-                          title: Text('KM', textAlign: TextAlign.center),
-                        ),
-                        ListTile(
-                          title: Text('261', textAlign: TextAlign.center),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Card(
-                    child: Column(
-                      children: const [
-                        ListTile(
-                          title: Text('Passos', textAlign: TextAlign.center),
-                        ),
-                        ListTile(
-                          title: Text('60.843', textAlign: TextAlign.center),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (hasOpenTraining)
-              Column(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ListTile(
+                title: userExists
+                    ? Text('Seja bem vindo, ${profile.name.split(' ')[0]}')
+                    : const Text('Seja bem vindo!'),
+              ),
+              Row(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 8, top: 16),
-                    child:
-                    ListTile(
-                      title: Text('Treino em andamento', style: TextStyle(fontSize: 20)),
+                  Expanded(
+                    child: Card(
+                      child: Column(
+                        children: [
+                          const ListTile(
+                            title: Text('Treinos concluídos', textAlign: TextAlign.center),
+                          ),
+                          ListTile(
+                            title: Text(totalTrainingFinish.toString(), textAlign: TextAlign.center),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  Material(
-                    child: InkWell(
-                      onTap: () => onTapTraining(),
-                      child: Card(
-                        child: Column(
-                          children: [
-                            const ListTile(
-                              minLeadingWidth: 10.0,
-                              title: Text('Acessar treino', style: TextStyle(fontSize: 20),),
-                              leading: Icon(Icons.directions_run),
-                              trailing: Icon(Icons.exit_to_app, size: 30,),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    minLeadingWidth: 10.0,
-                                    title: Text('Início: ' + dataTimeStart),
-                                    leading: const Icon(Icons.play_arrow),
-                                  ),
-                                  ListTile(
-                                    minLeadingWidth: 10.0,
-                                    title: Text('Total: ' + dataTimeTotal + ' min'),
-                                    leading: const Icon(Icons.timer),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                  Expanded(
+                    child: Card(
+                      child: Column(
+                        children: const [
+                          ListTile(
+                            title: Text('KM', textAlign: TextAlign.center),
+                          ),
+                          ListTile(
+                            title: Text('261', textAlign: TextAlign.center),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Card(
+                      child: Column(
+                        children: const [
+                          ListTile(
+                            title: Text('Passos', textAlign: TextAlign.center),
+                          ),
+                          ListTile(
+                            title: Text('60.843', textAlign: TextAlign.center),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
+              ),
+              if (hasOpenTraining)
+                Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8, top: 16),
+                      child:
+                      ListTile(
+                        title: Text('Treino em andamento', style: TextStyle(fontSize: 20)),
+                      ),
+                    ),
+                    Material(
+                      child: InkWell(
+                        onTap: () => onTapTraining(),
+                        child: Card(
+                          child: Column(
+                            children: [
+                              const ListTile(
+                                minLeadingWidth: 10.0,
+                                title: Text('Acessar treino', style: TextStyle(fontSize: 20),),
+                                leading: Icon(Icons.directions_run),
+                                trailing: Icon(Icons.exit_to_app, size: 30,),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: Column(
+                                  children: [
+                                    ListTile(
+                                      minLeadingWidth: 10.0,
+                                      title: Text('Início: ' + dataTimeStart),
+                                      leading: const Icon(Icons.play_arrow),
+                                    ),
+                                    ListTile(
+                                      minLeadingWidth: 10.0,
+                                      title: Text('Total: ' + dataTimeTotal + ' min'),
+                                      leading: const Icon(Icons.timer),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              Column(
+                children: const [
+                  CarouselTips(),
+                ],
               )
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: !hasOpenTraining ? FloatingActionButton.extended(
