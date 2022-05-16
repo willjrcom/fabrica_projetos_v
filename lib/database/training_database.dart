@@ -5,7 +5,7 @@ import '../Model/training_instance.dart';
 
 Future<Database> createDatabase() async {
   var databasesPath = await getDatabasesPath();
-  String path = join(databasesPath, 'training_database9.db');
+  String path = join(databasesPath, 'training_database11.db');
 
   // open the database
   return await openDatabase(path, version: 1,
@@ -17,7 +17,8 @@ Future<Database> createDatabase() async {
             'dataTimeStart TEXT, '
             'dataTimeFinish TEXT, '
             'dataTimeTotal TEXT, '
-            'isOpen INTEGER'
+            'isOpen INTEGER, '
+            'exercises TEXT'
             ')');
       });
 }

@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   onPressFloatingActionButton() {
     if (userExists) {
-      training = TrainingInstance(0, 'treino 1', '', '', '', 1);
+      training = TrainingInstance(0, 'treino 1', '', '', '', 1, []);
       createTraining(training).then((value) => loadScreen(context, 'training').then((trainingFinish) => {
         if (trainingFinish?.isOpen == 0) {
           onFinishTraining()
