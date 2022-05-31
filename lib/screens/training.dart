@@ -16,25 +16,24 @@ class TrainingScreen extends StatefulWidget {
 class _TrainingScreenState extends State<TrainingScreen> {
   late ProfileInstance profile;
   late TrainingInstance training;
-  late ExerciseInstance exercises =
-      ExerciseInstance(0, 0, 'Carregando...', 0, "");
+  late ExerciseInstance exercises = ExerciseInstance(0, 0, 'Carregando...', 0, "");
   late int totalTime = 0;
   late String totalTrainingTime = "0";
 
   void loadProfile(newProfile) {
     if (newProfile != null) {
-      profile = newProfile;
+      setState(() => profile = newProfile);
     }
   }
 
   void loadOpenTraining(newTraining) {
     if (newTraining != null) {
-      training = newTraining;
+      format(Duration d) => d.toString().substring(2, 7);
+      setState(() => training = newTraining);
 
       DateTime dataTimeStart = DateTime.parse(training.dataTimeStart);
       Duration timeDifferenceNow = DateTime.now().difference(dataTimeStart);
-      String min = timeDifferenceNow.inMinutes.toString();
-      totalTrainingTime = min;
+      totalTrainingTime = format(timeDifferenceNow);
 
       ExerciseInstance exercise = exerciseFromMap(jsonDecode(training.exercises));
       setState(() => exercises = exercise);

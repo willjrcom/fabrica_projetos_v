@@ -33,13 +33,16 @@ Future<double> countFrequencyWeekend() async {
   Database database = await createDatabaseTraining();
   int countDay = 0;
   late DateTime day;
-  int min = 0;
   var maps = await database.query('training');
+  int totalDays = maps.length;
+  int min =  maps.length;
+
   if (maps.length > 7) {
+    totalDays = 7;
     min = 8;
   }
 
-  Iterable<Map<String, Object?>> rangeMaps = maps.getRange(maps.length - min, maps.length - 1);
+  Iterable<Map<String, Object?>> rangeMaps = maps.getRange(maps.length - min, maps.length);
   Duration day1 = const Duration(days: 1);
 
   for (Map<String, dynamic> map in rangeMaps) {
@@ -62,7 +65,7 @@ Future<double> countFrequencyWeekend() async {
       countDay++;
     }
   }
-  double percentFrequency = countDay * 100 / 7;
+  double percentFrequency = countDay * 100 / totalDays;
   return double.parse(percentFrequency.toStringAsFixed(2));
 }
 

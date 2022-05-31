@@ -29,23 +29,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void loadProfile(newProfile) {
     if (newProfile != null) {
-      userExists = true;
-      profile = newProfile;
-      countTraining().then((value) => totalTrainingFinish = value);
-      countAverageTimeTrainings().then((value) => averageTimeTrainings = value.toString() + " min");
-      countFrequencyWeekend().then((value) => totalFrequencyWeekend = value.toString() + '%');
+      setState(() => userExists = true);
+      setState(() => profile = newProfile);
+      countTraining().then((value) => setState(() => totalTrainingFinish = value));
+      countAverageTimeTrainings().then((value) => setState(() => averageTimeTrainings = value.toString() + " min"));
+      countFrequencyWeekend().then((value) => setState(() => totalFrequencyWeekend = value.toString() + '%'));
     }
   }
 
   void loadOpenTraining(newTraining) {
     if (newTraining != null) {
-      training = newTraining;
+      format(Duration d) => d.toString().substring(2, 7);
+      setState(() => training = newTraining);
 
       DateTime timeStart = DateTime.parse(training.dataTimeStart);
-      dataTimeTotal = DateTime.now().difference(timeStart).inMinutes.toString();
+      Duration totalTime = DateTime.now().difference(timeStart);
+      setState(() => dataTimeTotal = format(totalTime));
+
       String hour = timeStart.hour < 10 ? '0' + timeStart.hour.toString() : timeStart.hour.toString();
       String minute = timeStart.minute < 10 ? '0' + timeStart.minute.toString() : timeStart.minute.toString();
-      dataTimeStart = hour + ':' + minute;
+      setState(() => dataTimeStart = hour + ':' + minute);
 
       if (newTraining.isOpen == 1) {
         setState(() => hasOpenTraining = true);
@@ -57,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void onFinishTraining() {
     countTraining().then((value) => setState(() => totalTrainingFinish = value));
-    countAverageTimeTrainings().then((value) => averageTimeTrainings = value.toString() + " min");
+    countAverageTimeTrainings().then((value) => setState(() => averageTimeTrainings = value.toString() + " min"));
     setState(() => hasOpenTraining = false);
   }
 
@@ -91,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (!userExists) {
-      findProfileById().then((profile) => setState(() => loadProfile(profile)));
+      findProfileById().then((profile) => loadProfile(profile));
     } else {
       findOpenTraining().then((value) => loadOpenTraining(value));
     }
