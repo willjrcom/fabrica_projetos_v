@@ -20,6 +20,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late String dataTimeStart;
   late String dataTimeTotal = '0';
+  late String averageTimeTrainings = "0 min";
+  late String totalFrequencyWeekend = "0%";
+
   bool userExists = false;
   bool hasOpenTraining = false;
   int totalTrainingFinish = 0;
@@ -29,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
       userExists = true;
       profile = newProfile;
       countTraining().then((value) => totalTrainingFinish = value);
+      countAverageTimeTrainings().then((value) => averageTimeTrainings = value.toString() + " min");
+      countFrequencyWeekend().then((value) => totalFrequencyWeekend = value.toString() + '%');
     }
   }
 
@@ -52,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void onFinishTraining() {
     countTraining().then((value) => setState(() => totalTrainingFinish = value));
+    countAverageTimeTrainings().then((value) => averageTimeTrainings = value.toString() + " min");
     setState(() => hasOpenTraining = false);
   }
 
@@ -65,9 +71,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  onPressFloatingActionButton() {
+  onPressFloatingActionButton() async {
     if (userExists) {
-      training = TrainingInstance(0, 'treino 1', '', '', '', 1, []);
+      training = TrainingInstance(0, '', '', '', 1, '', 0);
       createTraining(training).then((value) => loadScreen(context, 'training').then((trainingFinish) => {
         if (trainingFinish?.isOpen == 0) {
           onFinishTraining()
@@ -119,12 +125,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: Card(
                       child: Column(
-                        children: const [
-                          ListTile(
-                            title: Text('KM', textAlign: TextAlign.center),
+                        children: [
+                          const ListTile(
+                            title: Text('Média por treino', textAlign: TextAlign.center),
                           ),
                           ListTile(
-                            title: Text('261', textAlign: TextAlign.center),
+                            title: Text(averageTimeTrainings, textAlign: TextAlign.center),
                           ),
                         ],
                       ),
@@ -133,12 +139,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: Card(
                       child: Column(
-                        children: const [
-                          ListTile(
-                            title: Text('Passos', textAlign: TextAlign.center),
+                        children: [
+                          const ListTile(
+                            title: Text('Frequência semanal', textAlign: TextAlign.center),
                           ),
                           ListTile(
-                            title: Text('60.843', textAlign: TextAlign.center),
+                            title: Text(totalFrequencyWeekend, textAlign: TextAlign.center),
                           ),
                         ],
                       ),

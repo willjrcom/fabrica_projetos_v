@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'Model/profile_instance.dart';
+import 'package:splashscreen/splashscreen.dart';
 import 'components/app_bar.dart';
+import 'database/exercise_database.dart';
 import 'screens/home.dart';
 import 'screens/history_training.dart';
 import 'screens/profile.dart';
@@ -14,6 +15,8 @@ class VncApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    createAllExercises();
+
     return MaterialApp(
       title: '# vc na corrida',
       theme: ThemeData(
@@ -23,7 +26,34 @@ class VncApp extends StatelessWidget {
           color: Colors.yellow,
         ),
       ),
-      home: const ControlScreen(),
+      home: Stack(
+        alignment: Alignment.center,
+        children: [
+          SplashScreen(
+            seconds: 5,
+            gradientBackground: const LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Color(0xffffffff),
+                Color(0xffffd933)
+              ],
+            ),
+            navigateAfterSeconds: const ControlScreen(),
+            loaderColor: Colors.transparent,
+          ),
+          Container(
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                scale: 2,
+                image: AssetImage("assets/images/LogoVcNaCorrida.png"),
+                fit: BoxFit.none,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

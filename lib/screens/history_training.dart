@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:my_app/Model/exercise_instance.dart';
 import 'package:my_app/Model/training_instance.dart';
 
 import '../database/training_database.dart';
@@ -12,40 +16,66 @@ class HistoryTrainingScreen extends StatefulWidget {
 }
 
 class _HistoryTrainingScreenState extends State<HistoryTrainingScreen> {
+  void loadAllTraining(trainings) {
+    if (trainings.length == 0) {
+      widget._trainings.clear();
+    }
+    for (TrainingInstance training in trainings) {
+      final index = widget._trainings
+          .indexWhere((element) => element.id == training.id);
+      if (index == -1) {
+        setState(() => widget._trainings.add(training));
+      }
+    }
+  }
+
+  ExerciseInstance getExercise(text) {
+    return exerciseFromMap(jsonDecode(text));
+  }
 
   String loadTime(TrainingInstance training, String time) {
-    print(training);
     DateTime timeStart = DateTime.parse(training.dataTimeStart);
+    DateTime timeFinish = DateTime.parse(training.dataTimeFinish);
 
     if (time == 'total') {
-      return DateTime.now().difference(timeStart).inMinutes.toString();
+      return timeFinish.difference(timeStart).inMinutes.toString();
     } else if (time == 'start') {
       String hour = timeStart.hour < 10 ? '0' + timeStart.hour.toString() : timeStart.hour.toString();
       String minute = timeStart.minute < 10 ? '0' + timeStart.minute.toString() : timeStart.minute.toString();
       return hour + ':' + minute;
     }
     // final
-    DateTime timeFinish = DateTime.parse(training.dataTimeStart); //dataTimeFinish
     String hour = timeFinish.hour < 10 ? '0' + timeFinish.hour.toString() : timeFinish.hour.toString();
     String minute = timeFinish.minute < 10 ? '0' + timeFinish.minute.toString() : timeFinish.minute.toString();
     return hour + ':' + minute;
   }
 
+  String getDateTraining(training) {
+    DateTime dateTimeStart = DateTime.parse(training.dataTimeStart);
+    return DateFormat('EEEE - dd/MM').format(dateTimeStart)
+        .replaceAll("Monday", "Segunda")
+        .replaceAll("Tuesday", "Terça")
+        .replaceAll("Wednesday ", "Quarta")
+        .replaceAll("Thursday", "Quinta")
+        .replaceAll("Friday", "Sexta")
+        .replaceAll("Saturday", "Sabado")
+        .replaceAll("Sunday", "Domingo");
+  }
+
+  String getHourTraining(training) {
+    DateTime dateTimeStart = DateTime.parse(training.dataTimeStart);
+    return DateFormat('EEEE - hh:mm').format(dateTimeStart)
+        .replaceAll("Monday", "Segunda")
+        .replaceAll("Tuesday", "Terça")
+        .replaceAll("Wednesday ", "Quarta")
+        .replaceAll("Thursday", "Quinta")
+        .replaceAll("Friday", "Sexta")
+        .replaceAll("Saturday", "Sabado")
+        .replaceAll("Sunday", "Domingo");
+  }
+
   @override
   Widget build(BuildContext context) {
-    void loadAllTraining(trainings) {
-      if (trainings.length == 0) {
-        widget._trainings.clear();
-      }
-      for (TrainingInstance training in trainings) {
-        final index = widget._trainings
-            .indexWhere((element) => element.id == training.id);
-        if (index == -1) {
-          widget._trainings.add(training);
-        }
-      }
-    }
-
     findAllTrainingComplete().then((value) => loadAllTraining(value));
 
     return Padding(
@@ -64,34 +94,36 @@ class _HistoryTrainingScreenState extends State<HistoryTrainingScreen> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
                 ),
                 SizedBox(
-                  height: 200,
+                  height: 300,
                   child: ListView.builder(
-                      itemCount: widget._trainings.length,
-                      itemBuilder: (context, indexTraining) {
-                        return Card(
-                          child: ListTile(
-                            minLeadingWidth: 10.0,
-                            leading: const Icon(Icons.directions_run),
-                            title: Text(widget._trainings[indexTraining].name),
-                            trailing: const Icon(Icons.more_horiz),
-                            onTap: () => {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return SizedBox(
-                                    height: 400,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Scaffold(
-                                        body: Column(
-                                          children: [
-                                            const Text(
-                                              'Treino',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 22),
-                                            ),
-                                            Card(
+                    itemCount: widget._trainings.length,
+                    itemBuilder: (context, indexTraining) {
+                      return Card(
+                        child: ListTile(
+                          minLeadingWidth: 10.0,
+                          leading: const Icon(Icons.date_range_outlined),
+                          title: Text(getDateTraining(widget._trainings[indexTraining])),
+                          trailing: const Icon(Icons.more_horiz),
+                          onTap: () => {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return SizedBox(
+                                  height: 400,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Scaffold(
+                                      body: Column(
+                                        children: [
+                                          Text(
+                                            getHourTraining(widget._trainings[indexTraining]),
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22),
+                                          ),
+                                          Column(
+                                            children: [
+                                              Card(
                                                 child: Column(
                                                   children: [
                                                     ListTile(
@@ -107,54 +139,51 @@ class _HistoryTrainingScreenState extends State<HistoryTrainingScreen> {
                                                       title: Text('Final: ${loadTime(widget._trainings[indexTraining], '')} min'),
                                                     ),
                                                   ],
-                                                )),
-                                            if (widget._trainings[indexTraining].exercises.isNotEmpty)
-                                            Card(
+                                                ),
+                                              ),
+                                              Card(
                                                 child: Column(
-                                                children: [
-                                                  const ListTile(
-                                                    title: Text(
-                                                      'Exercícios praticados',
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                  children: [
+                                                    const ListTile(
+                                                      title: Text(
+                                                        'Exercícios praticados',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                          FontWeight.bold,
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                    ListView.builder(
-                                                    itemCount: widget._trainings[indexTraining].exercises.length,
-                                                    itemBuilder: (context, indexExercises) {
-                                                      return
-                                                        Card(
-                                                          child: ListTile(
-                                                            title: Text(widget._trainings[indexTraining].exercises[indexExercises]),
-                                                          ),
-                                                        );
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        floatingActionButton:
-                                            FloatingActionButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          child: const Icon(Icons.close,
-                                              color: Colors.black),
-                                          backgroundColor: Colors.yellow,
-                                        ),
+                                                    ListTile(
+                                                      title: Text(getExercise(widget._trainings[indexTraining].exercises).description
+                                                          .replaceAll("--Treino: ", "\nTreino:\n")
+                                                          .replaceAll("Aquecimento: ", "Aquecimento:\n")),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      floatingActionButton:
+                                          FloatingActionButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context),
+                                        child: const Icon(Icons.close,
+                                            color: Colors.black),
+                                        backgroundColor: Colors.yellow,
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
-                            },
-                          ),
-                        );
-                      }),
-                )
+                                  ),
+                                );
+                              },
+                            ),
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           )
@@ -162,20 +191,4 @@ class _HistoryTrainingScreenState extends State<HistoryTrainingScreen> {
       ),
     );
   }
-}
-
-funcao() {
-  return Column(
-    children: const [
-      Card(
-        child: ListTile(
-          minLeadingWidth: 10.0,
-          leading: Icon(Icons.directions_run),
-          title: Text('Treino 1'),
-          trailing: Icon(Icons.more_horiz),
-          //onTap: onTabTapped,
-        ),
-      ),
-    ],
-  );
 }
